@@ -4,18 +4,33 @@ import { pokeapi } from "../services/pokemonAPI";
 
 const columns = [
   { field: "name", headerName: "Pokemon Name", width: 200 },
-  { field: "url", headerName: "URL", width: 500 },
+  { field: "url", headerName: "URL", width: 300 },
+  {
+    field: "image",
+    headerName: "Image",
+    width: 200,
+    renderCell: (params) => {
+      return <img src={params.row.image} height={48} alt="image" />;
+    },
+  },
 ];
 
 const PokemonTable = () => {
   const [rows, setRows] = React.useState([]);
-
+  const fetchData = async () => {
+    const pokemonDataWithImageUrl = [];
+    const pokemonData = await pokeapi.getPokemonData();
+    for (const pokedata of pokemonData) {
+      const imageUrl = await pokeapi.getPokemonImageUrl(pokedata.url);
+      pokemonDataWithImageUrl.push({
+        ...pokedata,
+        image: imageUrl,
+      });
+    }
+    setRows(pokemonDataWithImageUrl);
+  };
   React.useEffect(() => {
-    pokeapi.getPokemonData().then((pokemonData) => {
-      if (pokemonData) {
-        setRows(pokemonData);
-      }
-    });
+    fetchData();
   }, []);
 
   return (
@@ -23,7 +38,7 @@ const PokemonTable = () => {
       <DataGrid
         rows={rows}
         columns={columns}
-        pageSize={10}
+        pageSize={5}
         rowsPerPageOptions={[5]}
         checkboxSelection
       />

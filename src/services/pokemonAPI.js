@@ -21,4 +21,12 @@ export const pokeapi = {
       return null;
     }
   },
+  getPokemonImageUrl: async (url) => {
+    const response = await axios.get(url);
+    if (response.status === 200) {
+      const spriteUrl = response.data.sprites.other.dream_world.front_default;
+      return spriteUrl;
+    }
+    return "";
+  },
 };
